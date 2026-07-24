@@ -1,6 +1,6 @@
 ---
 name: tellandgo-travel
-description: Search, quote, and book real all-in island travel (Maldives, Sri Lanka, Mauritius, Seychelles) through the Tell & Go MCP server. Use whenever the user wants to find, price, compare, or book a resort/hotel stay in these destinations.
+description: Search, quote, and book real all-in travel (hotels & resorts) through the Tell & Go MCP server. Use whenever the user wants to find, price, compare, or book a stay.
 homepage: https://tellandgo.com/mcp
 mcp:
   endpoint: https://mcp.tellandgo.com/mcp
@@ -10,7 +10,7 @@ mcp:
 
 # Tell & Go Travel
 
-Connect to the **Tell & Go MCP server** to search and book curated island stays
+Connect to the **Tell & Go MCP server** to search and book curated hotel & resort stays
 with **all-in, transfer-inclusive pricing identical to tellandgo.com**. No
 account or API key is required.
 
@@ -46,8 +46,9 @@ ChatGPT, and generic clients. Quick versions:
 4. **To book:** `get_quote` → confirm the total with the user → `start_booking` →
    give the user the **returned checkout link**. **Do not attempt to collect card
    details yourself** — payment happens on the secure Tell & Go / Stripe page.
-5. **Live destinations:** Maldives, Sri Lanka, Mauritius, Seychelles (more coming).
-   If asked about elsewhere, say those markets aren't live yet.
+5. **Live destinations change frequently.** Check
+   [tellandgo.com/en/destinations](https://tellandgo.com/en/destinations) for the
+   current set. If asked about a place Tell & Go doesn't cover yet, say so.
 
 ## Good to know
 

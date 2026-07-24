@@ -67,7 +67,7 @@ agent — before the big OTAs did.
 
 | The question | The answer |
 |---|---|
-| **Is it real?** | Live inventory, real bookings, confirmation email. An all-in Maldives quote *with the seaplane transfer included* — a number no OTA API surfaces. |
+| **Is it real?** | Live inventory, real bookings, confirmation email. An all-in quote *with transfers included* — resort speedboat, seaplane, domestic flight, whatever the property requires — a single upfront number no OTA API surfaces in one line. |
 | **Is it safe?** | Search & quote are read-only. Booking only returns a hosted Stripe checkout URL on `tellandgo.com`. The agent **never** sees card data. |
 | **What's the catch?** | None. Website rates, no markup for agent users, no account, MIT-licensed docs. |
 | **Why not Booking's agent?** | Theirs is a closed app inside one assistant. Ours works in *every* client that speaks MCP. |
@@ -78,7 +78,7 @@ agent — before the big OTAs did.
 
 | Tool | What it does |
 |---|---|
-| `search_stays` | Natural-language search over bookable island inventory; returns matches with all-in, transfer-inclusive nightly pricing. |
+| `search_stays` | Natural-language search over bookable hotel & resort inventory; returns matches with all-in, transfer-inclusive nightly pricing. |
 | `get_stay_details` | Full detail for one property: rooms, amenities, location, policies, indicative pricing. |
 | `get_quote` | A live, dated quote for a specific stay + dates + guests — the exact all-in total, matching the website. |
 | `start_booking` | Returns a hosted Stripe checkout link on tellandgo.com. The agent never handles card data; the traveler completes payment securely. |
@@ -148,15 +148,14 @@ curl -X POST https://mcp.tellandgo.com/mcp \
 
 ---
 
-## What it can book today
+## What it can book
 
-Curated, verified-bookable island stays across:
+Curated, verified-bookable hotel & resort stays. The live set of destinations
+grows all the time — see the current coverage at
+**[tellandgo.com/en/destinations](https://tellandgo.com/en/destinations)**.
 
-| 🇲🇻 Maldives | 🇱🇰 Sri Lanka | 🇲🇺 Mauritius | 🇸🇨 Seychelles |
-|:---:|:---:|:---:|:---:|
-
-More markets are coming soon — each new market simply grows the catalog behind
-the same endpoint.
+> Each new market simply grows the catalog behind the same endpoint — your agent
+> doesn't need to change anything.
 
 ---
 

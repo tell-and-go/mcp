@@ -10,7 +10,7 @@ repository are documented here. The server is hosted at
 ### Added
 - Initial public release of the Tell & Go MCP server.
 - Four tools: `search_stays`, `get_stay_details`, `get_quote`, `start_booking`.
-- Live markets: Maldives, Sri Lanka, Mauritius, Seychelles.
+- Initial live markets: Maldives, Sri Lanka, Mauritius, Seychelles (see [tellandgo.com/en/destinations](https://tellandgo.com/en/destinations) for the current set).
 - All-in, transfer-inclusive pricing (room + stated meal plan + resort/seaplane
   transfer in one upfront number), identical to tellandgo.com.
 - Hosted Stripe checkout for payment — the agent never handles card data.
