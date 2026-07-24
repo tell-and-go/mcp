@@ -1,0 +1,21 @@
+{
+  "name": "tellandgo",
+  "title": "Tell & Go — Book Real Travel from Any AI Agent",
+  "description": "Public MCP server for booking real island stays (Maldives, Sri Lanka, Mauritius, Seychelles) with all-in, transfer-inclusive pricing. No account, no API key. Search → quote → hosted Stripe checkout link. The agent never handles card data.",
+  "url": "https://mcp.tellandgo.com/mcp",
+  "repository": "https://github.com/tell-and-go/mcp",
+  "documentation": "https://github.com/tell-and-go/mcp",
+  "homepage": "https://tellandgo.com/mcp?src=glama",
+  "authors": [
+    {
+      "name": "Tell & Go",
+      "url": "https://tellandgo.com"
+    }
+  ],
+  "license": "MIT",
+  "categories": ["Travel"],
+  "keywords": ["travel", "booking", "hotels", "maldives", "seaplane", "ai-agents", "mcp"],
+  "pricing": "Free",
+  "transport": "streamable-http",
+  "authentication": "none"
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/draft/2025/server.json",
+  "name": "tellandgo",
+  "title": "Tell & Go",
+  "description": "Book real island travel from any AI agent. Search, quote, and book curated stays in the Maldives, Sri Lanka, Mauritius, and the Seychelles with all-in, transfer-inclusive pricing identical to tellandgo.com. No account required; booking completes via hosted Stripe checkout.",
+  "version": "1.0.0",
+  "homepage": "https://tellandgo.com/mcp?src=registry",
+  "documentation": "https://github.com/tell-and-go/mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tell-and-go/mcp"
+  },
+  "provider": {
+    "name": "Tell & Go",
+    "url": "https://tellandgo.com",
+    "contact": "hello@tellandgo.com"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.tellandgo.com/mcp",
+      "authentication": "none",
+      "headers": []
+    }
+  ],
+  "capabilities": {
+    "tools": [
+      {
+        "name": "search_stays",
+        "description": "Natural-language search over bookable island inventory; returns matches with all-in, transfer-inclusive nightly pricing. No account or API key required."
+      },
+      {
+        "name": "get_stay_details",
+        "description": "Full detail for one property: rooms, amenities, location, policies, and indicative pricing."
+      },
+      {
+        "name": "get_quote",
+        "description": "A live, dated quote for a specific stay + dates + guests; the exact all-in total, matching the website."
+      },
+      {
+        "name": "start_booking",
+        "description": "Returns a hosted Stripe checkout link on tellandgo.com. The agent never handles card data; the traveler completes payment securely."
+      }
+    ]
+  },
+  "pricing": "free",
+  "license": "MIT",
+  "categories": ["travel", "booking", "hospitality"],
+  "tags": ["travel", "hotels", "maldives", "booking", "mcp", "ai-agents"]
+}

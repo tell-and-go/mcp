@@ -1,0 +1,8 @@
+# Sync artifact — written by scripts/sync-mcp-public.sh in the monorepo
+.published-ref
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
