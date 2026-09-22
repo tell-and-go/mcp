@@ -28,10 +28,11 @@ ChatGPT, and generic clients. Quick versions:
 
 | Tool | Purpose |
 |------|---------|
-| `search_stays(query, destination?, check_in?, check_out?, adults?)` | Natural-language search. Returns matches with all-in nightly pricing. **Pass `check_in`/`check_out` for live, dated pricing.** |
+| `search_stays(query, destination?, check_in?, check_out?, adults?, residency?)` | Natural-language search. Returns matches with all-in nightly pricing. **Pass `check_in`/`check_out` for live, dated pricing.** `residency` is optional here (assumed GB and disclosed in `effective_request.assumptions`) but required at `get_quote`. |
 | `get_stay_details(property_id)` | Full detail for one property: rooms, amenities, location, policies. |
-| `get_quote(property_id, check_in, check_out, adults)` | The exact dated all-in total for a stay — matches the website. |
-| `start_booking(...)` | Returns a **hosted Stripe checkout link** on tellandgo.com. The traveler completes payment; the agent never handles card data. |
+| `get_quote(property_id, check_in, check_out, adults, residency)` | The exact dated all-in total for a stay — matches the website. `residency` (ISO 3166-1 alpha-2) is required here: ask the traveler. |
+| `prebook_stay(quote_id)` | Locks the quoted rate with the supplier before payment; returns a `prebook_id` required by `start_booking`. If `status` comes back `PRICE_CHANGED`, re-call with `accepted_terms_digest` set to the returned `terms_digest` to accept the new total. |
+| `start_booking(...)` | Returns a **hosted Stripe Checkout link** (checkout.stripe.com) that the traveler opens to pay. The agent never handles card data. |
 
 ## How to use it well
 
@@ -43,9 +44,12 @@ ChatGPT, and generic clients. Quick versions:
    transfer, where applicable) and match tellandgo.com exactly. **Never add fees,
    markups, or commissions.** The price shown is the final price — never invent
    extra charges.
-4. **To book:** `get_quote` → confirm the total with the user → `start_booking` →
-   give the user the **returned checkout link**. **Do not attempt to collect card
-   details yourself** — payment happens on the secure Tell & Go / Stripe page.
+4. **To book:** `get_quote` → confirm the total with the user → `prebook_stay` to
+   lock the rate → `start_booking` → give the user the **returned checkout link**.
+   If `prebook_stay` reports a changed price, show the new total to the user and
+   re-call it with `accepted_terms_digest` before booking. **Do not attempt to
+   collect card details yourself** — payment happens on the secure Tell & Go /
+   Stripe page.
 5. **Live destinations change frequently.** Check
    [tellandgo.com/en/destinations](https://tellandgo.com/en/destinations) for the
    current set. If asked about a place Tell & Go doesn't cover yet, say so.
@@ -68,4 +72,5 @@ ChatGPT, and generic clients. Quick versions:
 > 1. `search_stays(query: "overwater villa", destination: "Maldives", check_in: "2026-10-20", check_out: "2026-10-24", adults: 2)`
 > 2. Present 3–5 options with their all-in totals.
 > 3. On a pick: `get_quote(property_id, check_in, check_out, adults)` → confirm the total.
-> 4. `start_booking(...)` → share the checkout link for the traveler to pay.
+> 4. `prebook_stay(quote_id)` → lock the rate (re-accept if the price changed).
+> 5. `start_booking(...)` → share the checkout link for the traveler to pay.

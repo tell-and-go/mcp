@@ -104,7 +104,7 @@ MCP settings, Windsurf, Gemini CLI):
 
 Connect over the **streamable-HTTP** transport to
 `https://mcp.tellandgo.com/mcp`. No auth. Then call `search_stays`,
-`get_stay_details`, `get_quote`, and `start_booking`.
+`get_stay_details`, `get_quote`, `prebook_stay`, and `start_booking`.
 
 ---
 

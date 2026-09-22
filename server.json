@@ -38,8 +38,12 @@
         "description": "A live, dated quote for a specific stay + dates + guests; the exact all-in total, matching the website."
       },
       {
+        "name": "prebook_stay",
+        "description": "Locks the quoted rate with the supplier before payment; returns a prebook_id required by start_booking. If the price changed, re-call with the returned terms_digest to accept it."
+      },
+      {
         "name": "start_booking",
-        "description": "Returns a hosted Stripe checkout link on tellandgo.com. The agent never handles card data; the traveler completes payment securely."
+        "description": "Returns a hosted Stripe Checkout link (checkout.stripe.com) that the traveler opens to pay. The agent never handles card data."
       }
     ]
   },

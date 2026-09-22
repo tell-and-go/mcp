@@ -81,9 +81,10 @@ agent — before the big OTAs did.
 | `search_stays` | Natural-language search over bookable hotel & resort inventory; returns matches with all-in, transfer-inclusive nightly pricing. |
 | `get_stay_details` | Full detail for one property: rooms, amenities, location, policies, indicative pricing. |
 | `get_quote` | A live, dated quote for a specific stay + dates + guests — the exact all-in total, matching the website. |
-| `start_booking` | Returns a hosted Stripe checkout link on tellandgo.com. The agent never handles card data; the traveler completes payment securely. |
+| `prebook_stay` | Locks the quoted rate with the supplier before payment; returns a `prebook_id` for `start_booking`. If the supplier price changed, re-call with the returned `terms_digest` to accept it. |
+| `start_booking` | Returns a hosted Stripe Checkout link (checkout.stripe.com) that the traveler opens to pay. The agent never handles card data. |
 
-**Typical flow:** `search_stays` → `get_stay_details` → `get_quote` → `start_booking`
+**Typical flow:** `search_stays` → `get_stay_details` → `get_quote` → `prebook_stay` → `start_booking`
 
 <details>
 <summary><b>Example JSON-RPC calls</b></summary>
@@ -124,8 +125,9 @@ The MCP transport speaks JSON-RPC 2.0 over streamable-HTTP.
 }
 ```
 
-Follow up with `get_quote` for an exact dated total, then `start_booking` to
-receive the hosted checkout link the traveler completes.
+Follow up with `get_quote` for an exact dated total, then `prebook_stay` to
+lock the rate, then `start_booking` to receive the hosted checkout link the
+traveler completes.
 
 </details>
 
