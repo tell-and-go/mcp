@@ -1,0 +1,27 @@
+# Publishes registry/server.json to the Official MCP Registry as
+# io.github.tell-and-go/mcp. The registry grants the io.github.tell-and-go/*
+# namespace to GitHub Actions OIDC tokens from repos this org owns; the
+# interactive GitHub login only ever grants the publisher's personal namespace.
+# Run manually after a version bump in registry/server.json.
+name: Publish to MCP Registry
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+      - name: Log in with GitHub Actions OIDC
+        run: ./mcp-publisher login github-oidc
+      - name: Publish
+        working-directory: registry
+        run: ../mcp-publisher publish
