@@ -216,6 +216,7 @@ older clients.
 - 🤖 **`llms.txt`:** <https://tellandgo.com/llms.txt>
 - 📖 **Full inventory reference:** <https://tellandgo.com/llms-full.txt>
 - 📦 **Registry manifest:** [`server.json`](./server.json) · [`glama.json`](./glama.json)
+- 🗂️ **Find it on:** [Official MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.tell-and-go/mcp) (`io.github.tell-and-go/mcp`) · [Smithery](https://smithery.ai/servers/tellandgo/hotels) · [Glama](https://glama.ai/mcp/servers/tell-and-go/mcp)
 - 📝 **Changelog:** [`CHANGELOG.md`](./CHANGELOG.md)
 
 ---
