@@ -21,7 +21,7 @@
 Tell & Go runs a public [Model Context Protocol](https://modelcontextprotocol.io)
 server. Connect any AI agent — **Claude, ChatGPT, Cursor, Gemini CLI, Hermes,
 OpenClaw, or your own** — and it can search live resort inventory, get exact
-all-in quotes, and start a real booking that completes on our secure checkout page.
+live dated quotes, and start a real booking that completes on our secure checkout page.
 
 > [!IMPORTANT]
 > **This repository is documentation only.** The server is hosted at
@@ -53,9 +53,14 @@ One endpoint works in every MCP client:
 }
 ```
 
-Prefer a ready-made pack? [`skills/`](./skills) has a drop-in agent skill
-([`tellandgo-travel.md`](./skills/tellandgo-travel.md)) + per-client
-[`SETUP.md`](./skills/SETUP.md).
+Prefer a ready-made pack? [`skills/`](./skills) has a standard
+[`SKILL.md`](./skills/book-travel-with-tellandgo/SKILL.md), the legacy
+[`tellandgo-travel.md`](./skills/tellandgo-travel.md), and per-client
+[`SETUP.md`](./skills/SETUP.md). Coding agents can start with
+[`AGENTS.md`](./AGENTS.md).
+
+Install the standard skill into a supported coding agent with
+`npx skills add https://github.com/tell-and-go/mcp --skill book-travel-with-tellandgo`.
 
 ---
 
@@ -67,7 +72,7 @@ agent — before the big OTAs did.
 
 | The question | The answer |
 |---|---|
-| **Is it real?** | Live inventory, real bookings, confirmation email. An all-in quote *with transfers included* — resort speedboat, seaplane, domestic flight, whatever the property requires — a single upfront number no OTA API surfaces in one line. |
+| **Is it real?** | Live inventory, real bookings, and confirmation email. A dated quote shows the selected rate's total and terms, including whether resort transfers are included. |
 | **Is it safe?** | Search & quote are read-only. Booking only returns a hosted Stripe checkout URL on `tellandgo.com`. The agent **never** sees card data. |
 | **What's the catch?** | None. Website rates, no markup for agent users, no account, MIT-licensed docs. |
 | **Why not Booking's agent?** | Theirs is a closed app inside one assistant. Ours works in *every* client that speaks MCP. |
@@ -78,9 +83,9 @@ agent — before the big OTAs did.
 
 | Tool | What it does |
 |---|---|
-| `search_stays` | Natural-language search over bookable hotel & resort inventory; returns matches with all-in, transfer-inclusive nightly pricing. |
+| `search_stays` | Natural-language search over hotel and resort inventory; returns candidate stays and indicative pricing when available. Obtain a live quote to confirm bookability and transfer terms. |
 | `get_stay_details` | Full detail for one property: rooms, amenities, location, policies, indicative pricing. |
-| `get_quote` | A live, dated quote for a specific stay + dates + guests — the exact all-in total, matching the website. |
+| `get_quote` | A live, dated quote for a specific stay, dates, and guests, with the selected rate's total and terms. |
 | `prebook_stay` | Locks the quoted rate with the supplier before payment; returns a `prebook_id` for `start_booking`. If the supplier price changed, re-call with the returned `terms_digest` to accept it. |
 | `start_booking` | Returns a hosted Stripe Checkout link (checkout.stripe.com) that the traveler opens to pay. The agent never handles card data. |
 
@@ -164,8 +169,9 @@ grows all the time — see the current coverage at
 ## Pricing
 
 **Free to connect.** No account, no API key, no cost. Prices shown by the tools
-are **identical to tellandgo.com** — all-in (room + stated meal plan +
-resort/seaplane transfer where applicable). We never add fees or markups for
+follow the same live rate and checkout flow as tellandgo.com. Check each
+quoted rate's meal plan, transfer inclusion, taxes, cancellation terms, and
+total before presenting it to the traveler. We never add a special markup for
 agent users.
 
 > [!NOTE]
@@ -184,7 +190,8 @@ Yes. No account, no API key, no cost to connect.
 
 <details>
 <summary><b>Are the prices the same as the website?</b></summary>
-Identical — markup-inclusive and all-in (room + meal plan + transfer).
+The live quoted rate is the source of truth. Transfer inclusion and meal plans
+depend on the selected rate.
 </details>
 
 <details>

@@ -1,5 +1,5 @@
 ---
-name: tellandgo-travel
+name: book-travel-with-tellandgo
 description: Find, quote, and book hotels and resorts in Tell & Go's served destinations through its public MCP tools.
 ---
 
