@@ -1,0 +1,69 @@
+# Sets the Official MCP Registry status of one published version of
+# io.github.tell-and-go/mcp, e.g. to deprecate a version whose metadata is
+# wrong. Uses `mcp-publisher status` (PATCH /v0/servers/{name}/versions/{v}/status),
+# which needs the same publish permission the GitHub Actions OIDC login grants.
+# Deleting a version is deliberately not offered here. Run manually.
+name: Set MCP Registry version status
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Published version to change, e.g. 1.0.0"
+        required: true
+        type: string
+      status:
+        description: "New status"
+        required: true
+        type: choice
+        default: deprecated
+        options:
+          - deprecated
+          - active
+      message:
+        description: "Status message shown by the registry, e.g. which version to use instead"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  set-status:
+    runs-on: ubuntu-latest
+    env:
+      SERVER_NAME: io.github.tell-and-go/mcp
+      TARGET_VERSION: ${{ inputs.version }}
+      TARGET_STATUS: ${{ inputs.status }}
+      STATUS_MESSAGE: ${{ inputs.message }}
+    steps:
+      - name: Validate inputs
+        run: |
+          [[ "$TARGET_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "version must be MAJOR.MINOR.PATCH" >&2; exit 1; }
+          [[ "$TARGET_STATUS" == deprecated || "$TARGET_STATUS" == active ]] || { echo "status must be deprecated or active" >&2; exit 1; }
+          [[ -n "$STATUS_MESSAGE" ]] || { echo "message is required" >&2; exit 1; }
+      # Never deprecate the version the registry serves as latest.
+      - name: Refuse to deprecate the latest version
+        if: inputs.status == 'deprecated'
+        run: |
+          latest="$(curl -fsSL "https://registry.modelcontextprotocol.io/v0/servers?search=${SERVER_NAME}" \
+            | jq -r --arg n "$SERVER_NAME" '.servers[] | select(.server.name == $n and ._meta["io.modelcontextprotocol.registry/official"].isLatest) | .server.version')"
+          echo "Registry latest: ${latest:-none}"
+          [[ -n "$latest" ]] || { echo "could not read the latest version" >&2; exit 1; }
+          [[ "$latest" != "$TARGET_VERSION" ]] || { echo "refusing to deprecate the latest version $latest" >&2; exit 1; }
+      # This job can mint the registry OIDC token, so the binary is checked before it is unpacked.
+      # The hash is the release's own: registry_1.8.1_checksums.txt and the asset digest on v1.8.1.
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL -o mcp-publisher.tar.gz "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz"
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum --check --strict -
+          tar xzf mcp-publisher.tar.gz mcp-publisher
+      - name: Log in with GitHub Actions OIDC
+        run: ./mcp-publisher login github-oidc
+      - name: Set status
+        run: ./mcp-publisher status --status "$TARGET_STATUS" --message "$STATUS_MESSAGE" "$SERVER_NAME" "$TARGET_VERSION"
+      - name: Show registry state
+        run: |
+          curl -fsSL "https://registry.modelcontextprotocol.io/v0/servers?search=${SERVER_NAME}&include_deleted=true" \
+            | jq '.servers[] | {version: .server.version, official: ._meta["io.modelcontextprotocol.registry/official"]}'
