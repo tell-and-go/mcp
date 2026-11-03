@@ -8,6 +8,8 @@ repository are documented here. The server is hosted at
 ## [Unreleased]
 
 ### Changed (2026-11-03)
+- MCP Registry listing (1.0.1): the description no longer mentions hosted Stripe
+  checkout; it says checkout is on tellandgo.com.
 - `start_booking` takes a `quote_id` and `residency` and returns a checkout link
   on tellandgo.com, where the traveler enters guest details and pays. Hosted
   Stripe Checkout and the `prebook_id` requirement are gone.

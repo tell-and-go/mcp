@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.tell-and-go/mcp",
-  "description": "Live hotel and resort quotes: Maldives, Seychelles, Mauritius, Sri Lanka, Egypt, Paris. No key.",
+  "description": "Search, quote and book hotels and resorts from any AI agent. Checkout on tellandgo.com. No API key.",
   "version": "1.0.1",
   "repository": {
     "url": "https://github.com/tell-and-go/mcp",
