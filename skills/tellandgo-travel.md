@@ -1,16 +1,74 @@
 ---
 name: tellandgo-travel
-description: Find, quote, and book hotels and resorts in Tell & Go's served destinations through its public MCP tools.
+description: Search, quote, and book real all-in travel (hotels & resorts) through the Tell & Go MCP server. Use whenever the user wants to find, price, compare, or book a stay.
+homepage: https://tellandgo.com/mcp
+mcp:
+  endpoint: https://mcp.tellandgo.com/mcp
+  transport: streamable-http
+  auth: none
 ---
 
-# Book travel with Tell & Go
+# Tell & Go Travel
 
-Use this skill when a traveler asks for a stay in the Maldives, Seychelles, Mauritius, Sri Lanka, or Paris and needs a real dated price or a booking link.
+Connect to the **Tell & Go MCP server** to search and book curated hotel & resort stays
+with **all-in, transfer-inclusive pricing identical to tellandgo.com**. No
+account or API key is required.
 
-1. Connect to `https://mcp.tellandgo.com/mcp` using Streamable HTTP. The public tools do not require an account or API key.
-2. Call `search_stays` with the traveler's destination, dates, guest count, and preferences. Do not imply a property is bookable until a live quote succeeds.
-3. Call `get_stay_details` for promising results. Explain the room, meal plan, transfer inclusion, and cancellation terms as reported for the selected rate.
-4. Call `get_quote` with the selected stay, dates, guests, and the traveler’s residency when the tool requires it. Present the total, currency, and validity to the traveler. If the price or terms change, show the new terms before continuing.
-5. Call `prebook_stay`, then `start_booking` to obtain the hosted Tell & Go checkout link. Let the traveler complete payment on that page. Never request or transmit a card number in chat or through MCP.
+## Connect the server
 
-Use the [MCP server card](https://tellandgo.com/.well-known/mcp/server-card.json) for tool discovery and [pricing](https://tellandgo.com/pricing.md) for the developer and traveler pricing policy.
+The server is remote (streamable-HTTP) at `https://mcp.tellandgo.com/mcp`. Add it
+to your agent once — see `SETUP.md` for Hermes, OpenClaw, Claude Code, Cursor,
+ChatGPT, and generic clients. Quick versions:
+
+- **Hermes:** `hermes mcp add tellandgo --url https://mcp.tellandgo.com/mcp`
+- **OpenClaw:** add a remote HTTP MCP server pointing at the URL (docs.openclaw.ai/cli/mcp)
+- **Claude Code:** `claude mcp add --transport http tellandgo https://mcp.tellandgo.com/mcp`
+
+## Tools
+
+| Tool | Purpose |
+|------|---------|
+| `search_stays(query, destination?, check_in?, check_out?, adults?, residency?)` | Natural-language search. Returns matches with all-in nightly pricing. **Pass `check_in`/`check_out` for live, dated pricing.** `residency` is optional here (assumed GB and disclosed in `effective_request.assumptions`) but required at `get_quote`. |
+| `get_stay_details(property_id)` | Full detail for one property: rooms, amenities, location, policies. |
+| `get_quote(property_id, check_in, check_out, adults, residency)` | The exact dated all-in total for a stay — matches the website. `residency` (ISO 3166-1 alpha-2) is required here: ask the traveler. |
+| `start_booking(quote_id, residency)` | Returns a **checkout link on tellandgo.com**. The traveler enters guest details, sees the final total and pays there. The agent never handles card data. Relay `total` and `price_changed`. |
+| `prebook_stay(quote_id)` | Optional. Re-checks the quoted rate and terms with the supplier before checkout. It does not hold the rate. If `status` is `PRICE_CHANGED`, show the traveler the new terms. |
+
+## How to use it well
+
+1. **Clarify the trip first.** Confirm destination, check-in/check-out dates, and
+   number of guests before quoting — quotes are live and dated.
+2. **Search → refine → quote.** Use `search_stays` to shortlist, `get_stay_details`
+   to compare, then `get_quote` for a firm price on a specific stay + dates.
+3. **Trust the price.** Totals are **all-in** (room + stated meals + resort/seaplane
+   transfer, where applicable) and match tellandgo.com exactly. **Never add fees,
+   markups, or commissions.** The price shown is the final price — never invent
+   extra charges.
+4. **To book:** `get_quote` → confirm the total with the user → `start_booking`
+   with the `quote_id` and `residency` → give the user the **returned checkout
+   link**. If `price_changed` is true, tell the user the new total. **Do not
+   attempt to collect card details yourself:** the traveler enters guest details
+   and pays on tellandgo.com.
+5. **Live destinations change frequently.** Check
+   [tellandgo.com/en/destinations](https://tellandgo.com/en/destinations) for the
+   current set. If asked about a place Tell & Go doesn't cover yet, say so.
+
+## Good to know
+
+- **Fair use:** ~60 requests/minute per IP, with a tighter budget on
+  search/quote/booking. Stay conversational — don't fan out dozens of parallel
+  searches. On a transient `upstream_timeout` (a cold first search can take a few
+  seconds), retry once.
+- **Read-only by default:** `search_stays`, `get_stay_details`, and `get_quote`
+  never change anything. `start_booking` only ever produces a checkout link — it
+  cannot charge anyone or move money on its own.
+- **Currency:** prices are in USD.
+
+## Example flow
+
+> User: "Find me an overwater villa in the Maldives for two, Oct 20–24."
+>
+> 1. `search_stays(query: "overwater villa", destination: "Maldives", check_in: "2026-10-20", check_out: "2026-10-24", adults: 2)`
+> 2. Present 3–5 options with their all-in totals.
+> 3. On a pick: `get_quote(property_id, check_in, check_out, adults)` → confirm the total.
+> 4. `start_booking(quote_id, residency)` → share the tellandgo.com checkout link; the traveler enters guest details and pays there.

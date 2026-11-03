@@ -16,10 +16,16 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      # This job can mint the registry OIDC token, so the binary is checked before it is unpacked.
+      # The hash is the release's own: registry_1.8.1_checksums.txt and the asset digest on v1.8.1.
       - name: Install mcp-publisher
         run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          curl -fsSL -o mcp-publisher.tar.gz "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz"
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum --check --strict -
+          tar xzf mcp-publisher.tar.gz mcp-publisher
       - name: Log in with GitHub Actions OIDC
         run: ./mcp-publisher login github-oidc
       - name: Publish

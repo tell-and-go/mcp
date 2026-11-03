@@ -7,6 +7,18 @@ repository are documented here. The server is hosted at
 
 ## [Unreleased]
 
+### Changed (2026-11-03)
+- `start_booking` takes a `quote_id` and `residency` and returns a checkout link
+  on tellandgo.com, where the traveler enters guest details and pays. Hosted
+  Stripe Checkout and the `prebook_id` requirement are gone.
+- `prebook_stay` is optional: it re-checks the rate and terms but does not hold
+  the rate.
+- Search results rank like tellandgo.com (best match first, in-budget stays
+  ahead) and signal `next_offset` when more pages exist. Budgets are per night.
+- Added `get_price_facts`, `get_booking`, `cancel_booking`, `save_quote` and
+  `request_callback` to the tool docs, plus the standard agent skill
+  (`skills/book-travel-with-tellandgo/SKILL.md`) and `AGENTS.md`.
+
 ### Added
 - Fifth tool `prebook_stay` — locks the quoted rate with the supplier before
   payment and returns a `prebook_id` required by `start_booking`. Surfaces a

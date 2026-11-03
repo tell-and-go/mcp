@@ -8,7 +8,7 @@
 
 # Book real travel from any AI agent
 
-**No account · No API key · Same prices as our site · Payment on a hosted Stripe checkout your agent never touches**
+**No account · No API key · Same prices as our site · Payment on Tell & Go's own checkout at tellandgo.com, which your agent never touches**
 
 [![MCP](https://img.shields.io/badge/MCP-Streamable--HTTP-542fdb?style=flat-square)](https://modelcontextprotocol.io)
 [![Auth](https://img.shields.io/badge/auth-none-22c55e?style=flat-square)](#connect)
@@ -67,13 +67,13 @@ Install the standard skill into a supported coding agent with
 ## Why this exists
 
 Booking.com and Expedia built AI agents **inside their own apps**. We did the
-opposite: we opened our travel agency as a **public MCP** that works in *every*
+opposite: we opened our booking service as a **public MCP** that works in *every*
 agent — before the big OTAs did.
 
 | The question | The answer |
 |---|---|
 | **Is it real?** | Live inventory, real bookings, and confirmation email. A dated quote shows the selected rate's total and terms, including whether resort transfers are included. |
-| **Is it safe?** | Search & quote are read-only. Booking only returns a hosted Stripe checkout URL on `tellandgo.com`. The agent **never** sees card data. |
+| **Is it safe?** | Search & quote are read-only. Booking only returns a checkout link on `tellandgo.com`, where the traveler enters guest details and pays. The agent **never** sees card data. |
 | **What's the catch?** | None. Website rates, no markup for agent users, no account, MIT-licensed docs. |
 | **Why not Booking's agent?** | Theirs is a closed app inside one assistant. Ours works in *every* client that speaks MCP. |
 
@@ -86,10 +86,13 @@ agent — before the big OTAs did.
 | `search_stays` | Natural-language search over hotel and resort inventory; returns candidate stays and indicative pricing when available. Obtain a live quote to confirm bookability and transfer terms. |
 | `get_stay_details` | Full detail for one property: rooms, amenities, location, policies, indicative pricing. |
 | `get_quote` | A live, dated quote for a specific stay, dates, and guests, with the selected rate's total and terms. |
-| `prebook_stay` | Locks the quoted rate with the supplier before payment; returns a `prebook_id` for `start_booking`. If the supplier price changed, re-call with the returned `terms_digest` to accept it. |
-| `start_booking` | Returns a hosted Stripe Checkout link (checkout.stripe.com) that the traveler opens to pay. The agent never handles card data. |
+| `get_price_facts` | Read-only published price facts: the dated sample totals a resort's answer page shows. Not a quote. |
+| `start_booking` | From a `quote_id` and the traveler's `residency`, returns a checkout link on tellandgo.com. The traveler enters guest details, sees the final total and pays there. The agent never handles card data. |
+| `prebook_stay` | Optional. Re-checks the quoted rate and terms with the supplier before checkout. It does not hold the rate. |
+| `get_booking` / `cancel_booking` | Status of a booking made in this conversation, and cancellation under the rate's terms. |
+| `save_quote` / `request_callback` | Hand the traveler to a person on the team, only after they explicitly agreed to be contacted. Nothing is booked. |
 
-**Typical flow:** `search_stays` → `get_stay_details` → `get_quote` → `prebook_stay` → `start_booking`
+**Typical flow:** `search_stays` → `get_stay_details` → `get_quote` → `start_booking`. Search results are paged: when `pagination.has_more` is true, call again with `next_offset` before saying you have shown every option. `budget_min`/`budget_max` are per night, so divide a whole-stay budget by the number of nights.
 
 <details>
 <summary><b>Example JSON-RPC calls</b></summary>
@@ -130,9 +133,9 @@ The MCP transport speaks JSON-RPC 2.0 over streamable-HTTP.
 }
 ```
 
-Follow up with `get_quote` for an exact dated total, then `prebook_stay` to
-lock the rate, then `start_booking` to receive the hosted checkout link the
-traveler completes.
+Follow up with `get_quote` for an exact dated total, then `start_booking`
+with the `quote_id` and `residency` to receive the tellandgo.com checkout link
+the traveler completes.
 
 </details>
 
@@ -196,9 +199,11 @@ depend on the selected rate.
 
 <details>
 <summary><b>How does payment work?</b></summary>
-<code>start_booking</code> returns a hosted Stripe checkout link on
-tellandgo.com. The agent never touches card data; the traveler completes payment
-securely.
+<code>start_booking</code> returns a checkout link on tellandgo.com. The
+traveler enters guest details, sees the final total and pays there. The agent
+never touches card data. No booking exists until the traveler completes
+checkout; on a Reserve now, pay later rate that happens with nothing charged
+today.
 </details>
 
 <details>

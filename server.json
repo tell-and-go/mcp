@@ -2,7 +2,7 @@
   "$schema": "https://modelcontextprotocol.io/schemas/draft/2025/server.json",
   "name": "tellandgo",
   "title": "Tell & Go",
-  "description": "Book real travel from any AI agent. Search, quote, and book curated hotel & resort stays with all-in, transfer-inclusive pricing identical to tellandgo.com. No account required; booking completes via hosted Stripe checkout.",
+  "description": "Book real travel from any AI agent. Search, quote, and book curated hotel & resort stays with all-in, transfer-inclusive pricing identical to tellandgo.com. No account required; the traveler pays on Tell & Go's own checkout at tellandgo.com.",
   "version": "1.0.0",
   "homepage": "https://tellandgo.com/mcp?src=registry",
   "documentation": "https://github.com/tell-and-go/mcp",
@@ -34,16 +34,28 @@
         "description": "Full detail for one property: rooms, amenities, location, policies, and indicative pricing."
       },
       {
+        "name": "get_price_facts",
+        "description": "Read-only published price facts: the dated sample totals a resort's answer page shows (room, meal plan, transfer, taxes, cancellation, date checked). Not a quote; use get_quote for the traveler's own dates."
+      },
+      {
         "name": "get_quote",
         "description": "A live, dated quote for a specific stay + dates + guests; the exact all-in total, matching the website."
       },
       {
         "name": "prebook_stay",
-        "description": "Locks the quoted rate with the supplier before payment; returns a prebook_id required by start_booking. If the price changed, re-call with the returned terms_digest to accept it."
+        "description": "Optional. Re-checks the quoted rate and terms with the supplier before checkout. It does not hold the rate."
       },
       {
         "name": "start_booking",
-        "description": "Returns a hosted Stripe Checkout link (checkout.stripe.com) that the traveler opens to pay. The agent never handles card data."
+        "description": "From a quote_id and the traveler's residency, returns a checkout link on tellandgo.com where the traveler enters guest details and pays. The agent never handles card data."
+      },
+      {
+        "name": "save_quote",
+        "description": "Sends a stay the traveler is considering, with their contact details, to the Tell & Go team so a person follows up. Only after the traveler explicitly agreed to be contacted; nothing is booked, held or charged."
+      },
+      {
+        "name": "request_callback",
+        "description": "Asks the Tell & Go team to contact the traveler by email or phone. Only after the traveler explicitly agreed to be contacted; nothing is booked, held or charged."
       }
     ]
   },
