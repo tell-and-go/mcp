@@ -36,7 +36,7 @@ One endpoint works in every MCP client:
 | | Client | One-liner |
 |---|---|---|
 | 🟣 | **Claude Code** | `claude mcp add --transport http tellandgo https://mcp.tellandgo.com/mcp` |
-| 🌐 | **Claude.ai / Desktop** | Settings → Connectors → Add custom connector → `https://mcp.tellandgo.com/mcp` (leave auth empty) |
+| 🌐 | **Claude.ai / Desktop** | [Connect from Claude's connector directory](https://claude.ai/directory/connectors/tell-and-go), or Settings → Connectors → Add custom connector → `https://mcp.tellandgo.com/mcp` (leave auth empty) |
 | 💬 | **ChatGPT** | Settings → Connectors → Add custom MCP → `https://mcp.tellandgo.com/mcp` |
 | ⚡ | **Cursor / VS Code / Windsurf / Gemini CLI** | add an `mcpServers` entry (below) |
 | 🧠 | **Hermes** | `hermes mcp add tellandgo --url https://mcp.tellandgo.com/mcp` |
@@ -89,8 +89,8 @@ agent — before the big OTAs did.
 | `get_price_facts` | Read-only published price facts: the dated sample totals a resort's answer page shows. Not a quote. |
 | `start_booking` | From a `quote_id` and the traveler's `residency`, returns a checkout link on tellandgo.com. The traveler enters guest details, sees the final total and pays there. The agent never handles card data. |
 | `prebook_stay` | Optional. Re-checks the quoted rate and terms with the supplier before checkout. It does not hold the rate. |
-| `get_booking` / `cancel_booking` | Status of a booking made in this conversation, and cancellation under the rate's terms. |
-| `save_quote` / `request_callback` | Hand the traveler to a person on the team, only after they explicitly agreed to be contacted. Nothing is booked. |
+| `get_booking` / `get_cancellation_instructions` | Status of a booking made in this conversation, and how to cancel through the secure link in the confirmation email (this tool does not cancel). |
+| `save_quote` / `request_callback` | Hand the traveler to a person on the team, only after they explicitly agreed to be contacted and then confirmed by the emailed link. Nothing is booked. |
 
 **Typical flow:** `search_stays` → `get_stay_details` → `get_quote` → `start_booking`. Search results are paged: when `pagination.has_more` is true, call again with `next_offset` before saying you have shown every option. `budget_min`/`budget_max` are per night, so divide a whole-stay budget by the number of nights.
 

@@ -7,6 +7,43 @@ repository are documented here. The server is hosted at
 
 ## [Unreleased]
 
+### Added (2026-11-17)
+- Tell & Go is listed in Claude's connector directory:
+  <https://claude.ai/directory/connectors/tell-and-go>. The README and the setup guide link to it; adding the server by
+  hand as a custom connector still works.
+
+### Fixed (2026-11-16)
+- Connecting a Tell & Go account from Claude on the web, desktop and mobile.
+  The authorization server refused Claude's client metadata document because
+  it lists a grant type the server does not offer. It now accepts the document
+  and still issues tokens only for `authorization_code` and `refresh_token`.
+  Claude Code was not affected.
+
+### Changed (2026-11-16)
+- `get_cancellation_instructions` answers as a normal result instead of
+  `isError: true`. The result is `cancelled: false`,
+  `cancellation_channel: "emailed_secure_link"` and a `message` for the
+  traveler; `error_code` and `next_action` are gone from it. The unlisted
+  `cancel_booking` name still answers `isError`, because it was asked to cancel
+  and did not.
+- The connected `cancel_booking` description now says what an unconnected call
+  gets: a sign-in request when it names a `booking_id`.
+
+### Changed (2026-11-12, Claude directory review)
+- `save_quote` and `request_callback` use double opt-in: Tell & Go emails the
+  traveler a confirmation link, and the team contacts them only after they
+  click it. Until then the result has `status: "pending_confirmation"`, a
+  `request_id` and `lead_id: null`. The consent object is still required.
+- `cancel_booking` is renamed `get_cancellation_instructions`. It explains the
+  secure-link cancellation and does not cancel bookings. The old name is still
+  answered but no longer listed.
+- Every tool carries a `title` annotation.
+- Tool descriptions, server instructions and `search_stays` results describe
+  the `refine` block as data (an optional question with a suggested
+  `default_answer`); they no longer tell the assistant whether to ask it.
+  `refine.if_delegated` and `refine.request_complete_note` are removed;
+  `next_step` gains `missing`.
+
 ### Changed (2026-11-03)
 - MCP Registry listing (1.0.1): the description no longer mentions hosted Stripe
   checkout; it says checkout is on tellandgo.com.

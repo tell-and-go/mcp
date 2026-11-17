@@ -70,7 +70,10 @@ project's `.claude/skills/`).
 
 ## Claude.ai / Claude Desktop
 
-Settings → **Connectors** → **Add custom connector** → paste
+Tell & Go is listed in Claude's connector directory: open
+<https://claude.ai/directory/connectors/tell-and-go> and connect it there.
+
+Or add it by hand: Settings → **Connectors** → **Add custom connector** → paste
 `https://mcp.tellandgo.com/mcp`. Leave auth empty.
 
 ---
